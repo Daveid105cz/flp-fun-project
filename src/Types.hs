@@ -1,11 +1,9 @@
 module Types
-    ( Switch(..), Curve(..), Point(..)
+    ( Curve(..), Point(..)
     ) where
 import Numeric (showHex)
 import Text.Printf
 
-
-data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 
 data Point = Point { 
     x :: Integer, 

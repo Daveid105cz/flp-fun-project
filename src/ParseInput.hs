@@ -1,10 +1,12 @@
 module ParseInput
-    ( parseSwitch, parseCurve
+    ( parseSwitch, parseCurve, Switch(..)
     ) where
 
 import Types
 import Text.Parsec
 import Numeric (readHex, readDec)
+
+data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 
 parseSwitch :: String -> Maybe Switch
 parseSwitch "-i" = Just Info
@@ -71,3 +73,6 @@ parseCurve = do
     spaces
     char '}'
     return (Curve p a b g n h)
+
+
+
