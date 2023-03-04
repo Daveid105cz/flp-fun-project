@@ -35,4 +35,4 @@ instance Show Curve where
     "\ng: " ++ show g ++
     "\nn: " ++ hexaShow n ++
     "\nh: " ++ show h ++
-    "\n}"
+    "\n}\n"
