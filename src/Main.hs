@@ -7,9 +7,12 @@ import System.IO (readFile)
 import Data.Maybe (isJust)
 
 import ParseInput
-import Types
+import Curves
 import Text.Parsec
 import Text.Parsec.Error
+import System.Random
+import Ecdsa
+import Keys
 
 
 main :: IO ()
@@ -31,21 +34,38 @@ main = do
     []   -> do
         error "Invalid arguments, no switch set"
 
-doParseForInfo :: Monad m => String -> m (Either ParseError Curve)
-doParseForInfo textInput = do 
-    return $ parse parseCurve "" textInput
+
+
+getCurve :: Monad m => String -> m Curve
+getCurve textInput = do
+    parsed <- parseCurve textInput
+    case parsed of
+        Right curve -> return curve
+        Left err -> error "Invalid input"
+
+
+-- generateKeys :: Monad m => String -> m 
+generateNewKeys curve = do
+        generator <- newStdGen
+        let privateKey = generatePrivateKey generator (n curve)
+        let publicKey = calculatePublicKey curve privateKey
+        return (Key privateKey publicKey)
 
 makeWork :: Switch -> String -> IO()
 makeWork switch textInput = do
     case switch of
         Info -> do 
                 putStrLn "Printing info"
-                parsed <- doParseForInfo textInput
-                case parsed of
-                    Right curve -> print curve
-                    Left err -> print err
+                curve <- getCurve textInput   
+                print curve
 
-        KeyGen -> putStrLn "Printing K"
+        KeyGen -> do
+            putStrLn "Printing K"
+            curve <- getCurve textInput   
+            keys <- generateNewKeys curve
+            print keys 
+            -- newKey <- parseAndGenerateKey textInput
+            -- print newKey
         Sign -> putStrLn "Printing S"
         Verify -> putStrLn "Printing V"
 

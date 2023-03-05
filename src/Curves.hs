@@ -1,4 +1,4 @@
-module Types
+module Curves
     ( Curve(..), Point(..)
     ) where
 import Numeric (showHex)

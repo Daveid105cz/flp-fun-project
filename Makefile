@@ -1,5 +1,5 @@
 COMPILER = ghc
-SRCS = src/Main.hs src/ParseInput.hs src/Types.hs
+SRCS = src/Main.hs src/ParseInput.hs src/Curves.hs src/Keys.hs src/Ecdsa.hs
 
 OUTPUTE = flp22-fun
 GHC_FLAGS = -Wall

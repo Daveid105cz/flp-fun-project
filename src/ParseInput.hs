@@ -2,7 +2,7 @@ module ParseInput
     ( parseSwitch, parseCurve, Switch(..)
     ) where
 
-import Types
+import Curves
 import Text.Parsec
 import Numeric (readHex, readDec)
 
@@ -37,8 +37,8 @@ bigNumberWithName propertyName = do
     spaces
     try bigNumberHexa <|> bigNumber
 
-parsePoint :: Parsec String () Point
-parsePoint = do
+point :: Parsec String () Point
+point = do
     string "Point"
     spaces
     char '{'
@@ -51,8 +51,8 @@ parsePoint = do
     return (Point x y)
 
 -- Parse a curve
-parseCurve :: Parsec String () Curve
-parseCurve = do
+curve :: Parsec String () Curve
+curve = do
     string "Curve"
     spaces
     char '{'
@@ -65,7 +65,7 @@ parseCurve = do
     spaces
     string "g:"
     spaces
-    g <- parsePoint
+    g <- point
     spaces
     n <- bigNumberWithName "n"
     spaces
@@ -75,4 +75,6 @@ parseCurve = do
     return (Curve p a b g n h)
 
 
-
+parseCurve :: Monad m => String -> m (Either ParseError Curve)
+parseCurve textInput = do 
+    return $ parse curve "" textInput
