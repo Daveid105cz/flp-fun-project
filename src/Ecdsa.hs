@@ -13,7 +13,7 @@ data SigningInfo = SigningInfo{
     curve :: Curve,
     key :: Keys,
     hash :: Integer
-}
+} deriving Show
 
 
 generatePrivateKey :: StdGen -> Integer -> PrivateKey

@@ -43,6 +43,12 @@ getCurve textInput = do
         Right curve -> return curve
         Left err -> error "Invalid input"
 
+getSigningInfo :: Monad m => String -> m SigningInfo
+getSigningInfo textInput = do
+    parsed <- parseSigningInfo textInput
+    case parsed of
+        Right signInfo -> return signInfo
+        Left err -> error "Invalid input"
 
 -- generateKeys :: Monad m => String -> m 
 generateNewKeys curve = do
@@ -68,6 +74,9 @@ makeWork switch textInput = do
             print keys 
             -- newKey <- parseAndGenerateKey textInput
             -- print newKey
-        Sign -> putStrLn "Printing S"
+        Sign -> do
+            putStrLn "Printing S"
+            signInfo <- getSigningInfo textInput
+            print signInfo
         Verify -> putStrLn "Printing V"
 

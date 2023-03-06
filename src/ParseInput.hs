@@ -1,11 +1,12 @@
 module ParseInput
-    ( parseSwitch, parseCurve, Switch(..)
+    ( parseSwitch, parseCurve, parseSigningInfo,  Switch(..)
     ) where
 
 import Curves
 import Keys
 import Text.Parsec
 import Numeric (readHex, readDec)
+import Ecdsa (SigningInfo(SigningInfo))
 
 data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 
@@ -16,11 +17,13 @@ parseSwitch "-s" = Just Sign
 parseSwitch "-v" = Just Verify
 parseSwitch _ = Nothing
 
+preHexa = do
+    char '0'
+    char 'x' <|> char 'X'
 
 integerHexa :: Parsec String () Integer
 integerHexa = do
-    char '0'
-    char 'x' <|> char 'X'
+    preHexa
     allHexDigits <- many1 hexDigit
     case readHex allHexDigits of
         [(n, "")] -> return n
@@ -33,7 +36,7 @@ integer = do
         [(n, "")] -> return n
         _ -> error "Invalid number"
 
-bigNumberWithName propertyName = do
+integerWithName propertyName = do
     string propertyName
     string ":"
     spaces
@@ -45,9 +48,9 @@ point = do
     spaces
     char '{'
     spaces
-    x <- bigNumberWithName "x"
+    x <- integerWithName "x"
     spaces
-    y <- bigNumberWithName "y"
+    y <- integerWithName "y"
     spaces
     char '}'
     return (Point x y)
@@ -59,19 +62,19 @@ curve = do
     spaces
     char '{'
     spaces
-    p <- bigNumberWithName "p"
+    p <- integerWithName "p"
     spaces
-    a <- bigNumberWithName "a"
+    a <- integerWithName "a"
     spaces
-    b <- bigNumberWithName "b"
+    b <- integerWithName "b"
     spaces
     string "g:"
     spaces
     g <- point
     spaces
-    n <- bigNumberWithName "n"
+    n <- integerWithName "n"
     spaces
-    h <- bigNumberWithName "h"
+    h <- integerWithName "h"
     spaces
     char '}'
     return (Curve p a b g n h)
@@ -81,15 +84,45 @@ parseCurve :: Monad m => String -> m (Either ParseError Curve)
 parseCurve textInput = do 
     return $ parse curve "" textInput
 
+publicKey = do
+    preHexa
+    string "04"
+    xHexDigits <- count 64 hexDigit
+    let x = case readHex xHexDigits of
+            [(n, "")] -> n
+            _ -> error "Invalid number"
+    yHexDigits <- count 64 hexDigit
+    let y = case readHex yHexDigits of
+            [(n, "")] -> n
+            _ -> error "Invalid number"
+    return (PublicKey x y)
+
 keys :: Parsec String () Keys
 keys = do
     string "Key"
     spaces
     char '{'
     spaces
-    d <- bigNumberWithName "d"
+    d <- integerWithName "d"
     spaces
-    y <- bigNumberWithName "y"
+    string "Q:"
+    spaces
+    q <- publicKey
     spaces
     char '}'
-    return (Keys (PrivateKey 0) (PublicKey 0 0))
+    return (Keys (PrivateKey d) q)
+
+hash = integerWithName "Hash"
+
+signingInfo = do
+    c <- curve
+    spaces
+    k <- keys
+    spaces
+    h <- hash
+    spaces
+    return (SigningInfo c k h)
+
+parseSigningInfo :: Monad m => String -> m (Either ParseError SigningInfo)
+parseSigningInfo textInput = do 
+    return $ parse signingInfo "" textInput
