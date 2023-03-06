@@ -1,5 +1,5 @@
 module Curves
-    ( Curve(..), Point(..), multscalar
+    ( Curve(..), Point(..), multscalar, inverseMod
     ) where
 import Numeric (showHex)
 import Text.Printf
@@ -57,9 +57,9 @@ eucl r t s oldR oldT oldS
         newR = oldR - q*r
         newT = oldT - q*t
         newS = oldS - q*s
-modpow :: Integer -> Integer -> Integer
-modpow k p 
-    | k < 0 = p - modpow (-k) p
+inverseMod :: Integer -> Integer -> Integer
+inverseMod k p
+    | k < 0 = p - inverseMod (-k) p
     | otherwise = mod x p where (gcd, y, x) = eucl p 1 0 k 0 1 
 
 
@@ -68,8 +68,8 @@ add' (Point x1 y1) (Point x2 y2) a p = Point (mod x3 p) (mod y3 p) where
     x3 = m * m - x1 - x2
     y3 = m * (x1 - x3) - y1
     m = if x1 == x2
-        then mod ((3 * x1 * x1 + a) * modpow (2 * y1) p) p
-        else mod ((y1 - y2) * modpow (x1 - x2) p) p
+        then mod ((3 * x1 * x1 + a) * inverseMod (2 * y1) p) p
+        else mod ((y1 - y2) * inverseMod (x1 - x2) p) p
 
 
 add :: Point -> Point -> Integer -> Integer -> Point

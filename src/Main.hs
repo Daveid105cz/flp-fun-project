@@ -11,7 +11,7 @@ import Curves
 import Text.Parsec
 import Text.Parsec.Error
 import System.Random
-import Ecdsa
+import Ecdsa ( calculatePublicKey, SigningInfo (SigningInfo) , sign)
 import Keys
 
 
@@ -52,11 +52,16 @@ getSigningInfo textInput = do
 
 -- generateKeys :: Monad m => String -> m 
 generateNewKeys curve = do
-        generator <- newStdGen
-        -- let privateKey = generatePrivateKey generator (n curve)
-        let privateKey = PrivateKey 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
-        let publicKey = calculatePublicKey curve privateKey
-        return (Keys privateKey publicKey)
+    generator <- newStdGen
+    -- let privateKey = generatePrivateKey generator (n curve)
+    let privateKey = PrivateKey 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
+    let publicKey = calculatePublicKey curve privateKey
+    return (Keys privateKey publicKey)
+
+signHash signInfo@(SigningInfo curve keys hash) = do
+    generator <- newStdGen
+    let signResult = sign generator curve keys hash
+    return signResult
 
 makeWork :: Switch -> String -> IO()
 makeWork switch textInput = do
@@ -77,6 +82,7 @@ makeWork switch textInput = do
         Sign -> do
             putStrLn "Printing S"
             signInfo <- getSigningInfo textInput
-            print signInfo
+            signResult <- signHash signInfo
+            print signResult
         Verify -> putStrLn "Printing V"
 
