@@ -3,6 +3,7 @@ module ParseInput
     ) where
 
 import Curves
+import Keys
 import Text.Parsec
 import Numeric (readHex, readDec)
 
@@ -15,17 +16,18 @@ parseSwitch "-s" = Just Sign
 parseSwitch "-v" = Just Verify
 parseSwitch _ = Nothing
 
-bigNumberHexa :: Parsec String () Integer
-bigNumberHexa = do
+
+integerHexa :: Parsec String () Integer
+integerHexa = do
     char '0'
-    char 'x' <|> char 'x'
+    char 'x' <|> char 'X'
     allHexDigits <- many1 hexDigit
     case readHex allHexDigits of
         [(n, "")] -> return n
         _ -> error "Invalid number"
 
-bigNumber :: Parsec String () Integer
-bigNumber = do
+integer :: Parsec String () Integer
+integer = do
     allDigits <- many1 digit
     case readDec allDigits of
         [(n, "")] -> return n
@@ -35,7 +37,7 @@ bigNumberWithName propertyName = do
     string propertyName
     string ":"
     spaces
-    try bigNumberHexa <|> bigNumber
+    try integerHexa <|> integer
 
 point :: Parsec String () Point
 point = do
@@ -78,3 +80,16 @@ curve = do
 parseCurve :: Monad m => String -> m (Either ParseError Curve)
 parseCurve textInput = do 
     return $ parse curve "" textInput
+
+keys :: Parsec String () Keys
+keys = do
+    string "Key"
+    spaces
+    char '{'
+    spaces
+    d <- bigNumberWithName "d"
+    spaces
+    y <- bigNumberWithName "y"
+    spaces
+    char '}'
+    return (Keys (PrivateKey 0) (PublicKey 0 0))

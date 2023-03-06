@@ -1,18 +1,27 @@
 module Ecdsa 
     (
         generatePrivateKey,
-        calculatePublicKey
+        calculatePublicKey,
+        SigningInfo(..)
     )where
 
 import System.Random
-import Keys (PublicKey(PublicKey), PrivateKey (PrivateKey))
+import Keys (PublicKey(PublicKey), PrivateKey (PrivateKey), Keys)
 import Curves
+
+data SigningInfo = SigningInfo{
+    curve :: Curve,
+    key :: Keys,
+    hash :: Integer
+}
+
 
 generatePrivateKey :: StdGen -> Integer -> PrivateKey
 generatePrivateKey genSeed maxN = let (theVal, _) = randomR (1,maxN-1) genSeed in PrivateKey theVal
 
 calculatePublicKey :: Curve -> PrivateKey -> PublicKey
-calculatePublicKey curve privateKey = PublicKey 0xFFFF5555FFF 0xFFFFFFF
+calculatePublicKey curve@(Curve p a b g n h) (PrivateKey pK) = PublicKey pX pY where
+    (Point pX pY) = multscalar g pK a p 
 
 
 

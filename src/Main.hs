@@ -47,9 +47,10 @@ getCurve textInput = do
 -- generateKeys :: Monad m => String -> m 
 generateNewKeys curve = do
         generator <- newStdGen
-        let privateKey = generatePrivateKey generator (n curve)
+        -- let privateKey = generatePrivateKey generator (n curve)
+        let privateKey = PrivateKey 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
         let publicKey = calculatePublicKey curve privateKey
-        return (Key privateKey publicKey)
+        return (Keys privateKey publicKey)
 
 makeWork :: Switch -> String -> IO()
 makeWork switch textInput = do
@@ -63,6 +64,7 @@ makeWork switch textInput = do
             putStrLn "Printing K"
             curve <- getCurve textInput   
             keys <- generateNewKeys curve
+            -- gcd
             print keys 
             -- newKey <- parseAndGenerateKey textInput
             -- print newKey
