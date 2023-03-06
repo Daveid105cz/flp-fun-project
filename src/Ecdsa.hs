@@ -2,19 +2,12 @@ module Ecdsa
     (
         generatePrivateKey,
         calculatePublicKey,
-        sign,
-        SigningInfo(..)
+        sign
     )where
 
 import System.Random
-import Keys (PublicKey(PublicKey), PrivateKey (PrivateKey), Keys (Keys))
-import Curves
-
-data SigningInfo = SigningInfo{
-    curve :: Curve,
-    key :: Keys,
-    hash :: Integer
-} deriving Show
+import Types
+import CurveMath
 
 
 generatePrivateKey :: StdGen -> Integer -> PrivateKey
@@ -24,11 +17,11 @@ calculatePublicKey :: Curve -> PrivateKey -> PublicKey
 calculatePublicKey curve@(Curve p a b g n h) (PrivateKey pK) = PublicKey pX pY where
     (Point pX pY) = multscalar g pK a p 
 
-sign :: StdGen -> Curve -> Keys -> Integer -> (Integer, Integer)
+sign :: StdGen -> Curve -> Keys -> Integer -> (Signature, Integer)
 sign generator curve@(Curve p a b g n h) keys@(Keys (PrivateKey pK) (PublicKey xP yP)) hash =
     if r==0 || s==0 
         then sign newGen curve keys hash
-        else (r,s) 
+        else (Signature r s, k)
         where
         (k, newGen) = randomR (1,n-1) generator
         kPoint = multscalar g k a p

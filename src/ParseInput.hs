@@ -2,11 +2,9 @@ module ParseInput
     ( parseSwitch, parseCurve, parseSigningInfo,  Switch(..)
     ) where
 
-import Curves
-import Keys
 import Text.Parsec
 import Numeric (readHex, readDec)
-import Ecdsa (SigningInfo(SigningInfo))
+import Types
 
 data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 
@@ -126,3 +124,4 @@ signingInfo = do
 parseSigningInfo :: Monad m => String -> m (Either ParseError SigningInfo)
 parseSigningInfo textInput = do 
     return $ parse signingInfo "" textInput
+

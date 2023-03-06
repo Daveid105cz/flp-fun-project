@@ -5,14 +5,14 @@ module Main where
 import System.Environment (getArgs)
 import System.IO (readFile)
 import Data.Maybe (isJust)
-
-import ParseInput
-import Curves
 import Text.Parsec
 import Text.Parsec.Error
 import System.Random
-import Ecdsa ( calculatePublicKey, SigningInfo (SigningInfo) , sign)
-import Keys
+
+import ParseInput
+import CurveMath
+import Ecdsa
+import Types
 
 
 main :: IO ()
@@ -67,22 +67,18 @@ makeWork :: Switch -> String -> IO()
 makeWork switch textInput = do
     case switch of
         Info -> do 
-                putStrLn "Printing info"
-                curve <- getCurve textInput   
-                print curve
+            curve <- getCurve textInput   
+            print curve
 
         KeyGen -> do
-            putStrLn "Printing K"
             curve <- getCurve textInput   
             keys <- generateNewKeys curve
-            -- gcd
             print keys 
-            -- newKey <- parseAndGenerateKey textInput
-            -- print newKey
         Sign -> do
-            putStrLn "Printing S"
+            -- putStrLn "Printing S"
             signInfo <- getSigningInfo textInput
-            signResult <- signHash signInfo
-            print signResult
+            (s, kk) <- signHash signInfo
+            print s
+            putStrLn $ hexaShow kk
         Verify -> putStrLn "Printing V"
 
