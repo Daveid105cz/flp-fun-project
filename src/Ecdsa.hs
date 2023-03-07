@@ -30,15 +30,6 @@ sign generator curve@(Curve p a b g n h) keys@(Keys (PrivateKey pK) (PublicKey x
         s = mod ((hash + r * pK) * inverseMod k n) n
 
 
--- BigInteger z = HashMessage(message);
-
--- BigInteger w = InverseMod(signature.s, Curve.n);
--- BigInteger u1 = MathMod((z * w), Curve.n);
--- BigInteger u2 = MathMod((signature.r * w), Curve.n);
-
--- BigIntegerPoint point = PointAdd(ScalarMult(u1, Curve.G), ScalarMult(u2, publicKey));
--- return MathMod(signature.r, Curve.n) == MathMod(point.X, Curve.n);
-
 verify :: Curve -> PublicKey -> Signature -> Integer -> Bool
 verify curve@(Curve p a b g n h) public@(PublicKey px py) signature@(Signature r s) hash
     | (r < 1 || r > (n-1)) || (s < 1 || s > (n-1)) = False
