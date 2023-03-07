@@ -1,5 +1,5 @@
 module CurveMath
-    ( multscalar, inverseMod
+    ( multscalar, inverseMod, add
     ) where
 import Types
 

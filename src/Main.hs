@@ -29,7 +29,10 @@ main = do
     [sw] -> do
         let switch = parseSwitch sw
         case switch of
-            Just a -> makeWork a "Stdin"
+            Just a -> do 
+                stdinContent <- getContents
+                -- putStrLn stdinContent
+                makeWork a stdinContent
             Nothing -> error "Invalid switch on input"
     []   -> do
         error "Invalid arguments, no switch set"
@@ -88,5 +91,6 @@ makeWork switch textInput = do
             print s
         Verify -> do
             verifyInfo <- getVerifyInfo textInput
-            print verifyInfo
+            let resu = verify (vCurve verifyInfo) (vPublicKey verifyInfo) (vSignature verifyInfo) 0x94996fead5b722c3bd07360c459927976e804f869626f4897def03fa56b009e3
+            print resu
 

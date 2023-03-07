@@ -2,7 +2,8 @@ module Ecdsa
     (
         generatePrivateKey,
         calculatePublicKey,
-        sign
+        sign,
+        verify
     )where
 
 import System.Random
@@ -22,9 +23,31 @@ sign generator curve@(Curve p a b g n h) keys@(Keys (PrivateKey pK) (PublicKey x
     if r==0 || s==0 
         then sign newGen curve keys hash
         else (Signature r s, k)
-        where
+    where
         (k, newGen) = randomR (1,n-1) generator
         kPoint = multscalar g k a p
         r = mod (x kPoint) n
         s = mod ((hash + r * pK) * inverseMod k n) n
 
+
+-- BigInteger z = HashMessage(message);
+
+-- BigInteger w = InverseMod(signature.s, Curve.n);
+-- BigInteger u1 = MathMod((z * w), Curve.n);
+-- BigInteger u2 = MathMod((signature.r * w), Curve.n);
+
+-- BigIntegerPoint point = PointAdd(ScalarMult(u1, Curve.G), ScalarMult(u2, publicKey));
+-- return MathMod(signature.r, Curve.n) == MathMod(point.X, Curve.n);
+
+verify :: Curve -> PublicKey -> Signature -> Integer -> Bool
+verify curve@(Curve p a b g n h) public@(PublicKey px py) signature@(Signature r s) hash
+    | (r < 1 || r > (n-1)) || (s < 1 || s > (n-1)) = False
+    | otherwise = mod r n == mod (x point) n where
+        w = inverseMod s n
+        u1 = mod (hash*w) n
+        u2 = mod (r*w) n
+        scalar1 = multscalar g u1 a p
+        scalar2 = multscalar (Point px py) u2 a p
+        point = add scalar1 scalar2 a p
+
+        -- point = add 
