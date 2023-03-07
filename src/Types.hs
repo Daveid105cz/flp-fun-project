@@ -7,6 +7,7 @@ module Types
         Keys(..),
         SigningInfo(..),
         Signature(..),
+        VerifyInfo(..),
         hexaShow
     ) where
 import Text.Printf
@@ -79,4 +80,10 @@ data Signature = Signature{
 }
 
 instance Show Signature where
-    show (Signature r s) = "Signture {\nr: "++hexaShow r ++ "\ns: "++hexaShow s ++ "\n}"
+    show (Signature r s) = "Signature {\nr: "++hexaShow r ++ "\ns: "++hexaShow s ++ "\n}"
+
+data VerifyInfo = VerifyInfo{
+    vCurve :: Curve,
+    vSignature :: Signature,
+    vPublicKey :: PublicKey
+} deriving Show

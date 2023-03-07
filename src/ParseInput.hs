@@ -1,5 +1,5 @@
 module ParseInput
-    ( parseSwitch, parseCurve, parseSigningInfo,  Switch(..)
+    ( parseSwitch, parseCurve, parseSigningInfo, parseVerifyInfo,  Switch(..)
     ) where
 
 import Text.Parsec
@@ -125,3 +125,42 @@ parseSigningInfo :: Monad m => String -> m (Either ParseError SigningInfo)
 parseSigningInfo textInput = do 
     return $ parse signingInfo "" textInput
 
+
+publicKeyOnly :: Parsec String () PublicKey
+publicKeyOnly = do
+    string "PublicKey"
+    spaces
+    char '{'
+    spaces
+    string "Q:"
+    spaces
+    q <- publicKey
+    spaces
+    char '}'
+    return q
+
+msgSignature :: Parsec String () Signature
+msgSignature = do
+    string "Signature"
+    spaces
+    char '{'
+    spaces
+    r <- integerWithName "r"
+    spaces
+    s <- integerWithName "s"
+    spaces
+    char '}'
+    return (Signature r s)
+
+verifyInfo = do
+    c <- curve
+    spaces
+    sig <- msgSignature
+    spaces
+    p <- publicKeyOnly
+    spaces
+    return (VerifyInfo c sig p)
+
+parseVerifyInfo :: Monad m => String -> m (Either ParseError VerifyInfo)
+parseVerifyInfo textInput = do 
+    return $ parse verifyInfo "" textInput

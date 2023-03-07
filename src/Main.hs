@@ -50,6 +50,14 @@ getSigningInfo textInput = do
         Right signInfo -> return signInfo
         Left err -> error "Invalid input"
 
+getVerifyInfo :: Monad m => String -> m VerifyInfo
+getVerifyInfo textInput = do
+    parsed <- parseVerifyInfo textInput
+    case parsed of
+        Right verifyInfo -> return verifyInfo
+        Left err -> error "Invalid input"
+
+
 -- generateKeys :: Monad m => String -> m 
 generateNewKeys curve = do
     generator <- newStdGen
@@ -75,10 +83,10 @@ makeWork switch textInput = do
             keys <- generateNewKeys curve
             print keys 
         Sign -> do
-            -- putStrLn "Printing S"
             signInfo <- getSigningInfo textInput
             (s, kk) <- signHash signInfo
             print s
-            putStrLn $ hexaShow kk
-        Verify -> putStrLn "Printing V"
+        Verify -> do
+            verifyInfo <- getVerifyInfo textInput
+            print verifyInfo
 
