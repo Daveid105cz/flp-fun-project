@@ -6,20 +6,24 @@ module CurveMath
     ) where
 import Types ( Point(Point) )
 
+-- | Point representing infinity
 inf :: Point
 inf = Point 0 0
 
+-- | Checks if a point is infinity
 isInf :: Point -> Bool
 isInf (Point 0 0) = True
 isInf (Point _ _) = False
 
-
+-- | Negates a point on a curve
 neg :: Point -> Integer -> Point
 neg (Point x y) p = Point x ( mod (-y) p)
 
+-- | Checks if a point is a negation of another point
 isNegation :: Point -> Point -> Integer -> Bool
 isNegation p q curveP = p == neg q curveP
 
+-- | Calculate extended euclidean algorithm for given numbers
 eucl :: Integer -> Integer -> Integer -> Integer ->Integer -> Integer -> (Integer, Integer, Integer)
 eucl r t s oldR oldT oldS 
     | r == 0 = (oldR, oldT, oldS)
@@ -28,12 +32,15 @@ eucl r t s oldR oldT oldS
         newR = oldR - q*r
         newT = oldT - q*t
         newS = oldS - q*s
+
+-- | Calculates the inverse module of a number and another number
 inverseMod :: Integer -> Integer -> Integer
 inverseMod k p
     | k < 0 = p - inverseMod (-k) p
     | otherwise = mod x p where (gcd, y, x) = eucl p 1 0 k 0 1 
 
-
+-- | Adds two points on a curve given the curve parameters
+-- A helper function for add that checks for special cases
 add' :: Point -> Point -> Integer -> Integer -> Point
 add' (Point x1 y1) (Point x2 y2) a p = Point (mod x3 p) (mod y3 p) where
     x3 = m * m - x1 - x2
@@ -42,7 +49,8 @@ add' (Point x1 y1) (Point x2 y2) a p = Point (mod x3 p) (mod y3 p) where
         then mod ((3 * x1 * x1 + a) * inverseMod (2 * y1) p) p
         else mod ((y1 - y2) * inverseMod (x1 - x2) p) p
 
-
+-- | Adds two points on a curve given the curve parameters
+-- Uses add' to do the actual addition
 add :: Point -> Point -> Integer -> Integer -> Point
 add p@(Point x1 y1) q@(Point x2 y2) curveA curveP
     | isInf p = q
@@ -50,7 +58,9 @@ add p@(Point x1 y1) q@(Point x2 y2) curveA curveP
     | (x1 == x2) && (y1 /= y2) = inf
     | otherwise = add' p q curveA curveP
 
-
+-- | Multiplies a point on a curve by a scalar
+-- Uses double and add algorithm to do the multiplication
+-- A helper function for multscalar
 multscalar' :: Point -> Integer -> Integer -> Integer -> Point
 multscalar' point k curveA curveP
     | k == 0 = inf
@@ -58,6 +68,8 @@ multscalar' point k curveA curveP
     | mod k 2 == 1 = add point (multscalar' point (k-1) curveA curveP) curveA curveP
     | otherwise = multscalar' (add point point curveA curveP) (div k 2) curveA curveP
 
+-- | Multiplies a point on a curve by a scalar
+-- Uses multscalar' to do the actual multiplication
 multscalar :: Point -> Integer -> Integer -> Integer -> Point
 multscalar point k curveA curveP
     | mod k curveP == 0 = inf

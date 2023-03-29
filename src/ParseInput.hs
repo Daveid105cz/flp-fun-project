@@ -31,6 +31,7 @@ import Types
 
 data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 
+-- | Parse switch from args
 parseSwitch :: String -> Maybe Switch
 parseSwitch "-i" = Just Info
 parseSwitch "-k" = Just KeyGen
@@ -38,11 +39,13 @@ parseSwitch "-s" = Just Sign
 parseSwitch "-v" = Just Verify
 parseSwitch _ = Nothing
 
+-- | Parses the hexadecimal marker
 preHexa :: Parsec String () Char
 preHexa = do
     char '0'
     char 'x' <|> char 'X'
 
+-- | Parses a hexadecimal number
 integerHexa :: Parsec String () Integer
 integerHexa = do
     preHexa
@@ -51,6 +54,7 @@ integerHexa = do
         [(n, "")] -> return n
         _ -> error "Invalid number"
 
+-- | Parses an integer in a decimal format
 integer :: Parsec String () Integer
 integer = do
     allDigits <- many1 digit
@@ -58,6 +62,8 @@ integer = do
         [(n, "")] -> return n
         _ -> error "Invalid number"
 
+-- | Parses an integer with a name
+-- The number can be in a hexadecimal or decimal format
 integerWithName :: String -> Parsec String () Integer
 integerWithName propertyName = do
     string propertyName
@@ -65,6 +71,7 @@ integerWithName propertyName = do
     spaces
     try integerHexa <|> integer
 
+-- | Parses a point
 point :: Parsec String () Point
 point = do
     string "Point"
@@ -78,6 +85,7 @@ point = do
     char '}'
     return (Point x y)
 
+-- | Parses a curve
 curve :: Parsec String () Curve
 curve = do
     string "Curve"
@@ -101,11 +109,12 @@ curve = do
     char '}'
     return (Curve p a b g n h)
 
-
+-- | Parses a curve using Parsec given the input string
 parseCurve :: Monad m => String -> m (Either ParseError Curve)
 parseCurve textInput = do 
     return $ parse curve "" textInput
 
+-- | Parses a public key using Parsec given the input string
 publicKey :: Parsec String () PublicKey
 publicKey = do
     preHexa
@@ -120,6 +129,7 @@ publicKey = do
             _ -> error "Invalid number"
     return (PublicKey x y)
 
+-- | Parses a private key and public key
 keys :: Parsec String () Keys
 keys = do
     string "Key"
@@ -135,9 +145,11 @@ keys = do
     char '}'
     return (Keys (PrivateKey d) q)
 
+-- | Parses a hash
 hash :: Parsec String () Integer
 hash = integerWithName "Hash"
 
+-- | Parses a signing info
 signingInfo :: Parsec String () SigningInfo
 signingInfo = do
     c <- curve
@@ -148,11 +160,12 @@ signingInfo = do
     spaces
     return (SigningInfo c k h)
 
+-- | Parses a signing info using Parsec given the input string
 parseSigningInfo :: Monad m => String -> m (Either ParseError SigningInfo)
 parseSigningInfo textInput = do 
     return $ parse signingInfo "" textInput
 
-
+-- | Parses a public key
 publicKeyOnly :: Parsec String () PublicKey
 publicKeyOnly = do
     string "PublicKey"
@@ -166,6 +179,7 @@ publicKeyOnly = do
     char '}'
     return q
 
+-- | Parses a message signature
 msgSignature :: Parsec String () Signature
 msgSignature = do
     string "Signature"
@@ -179,6 +193,7 @@ msgSignature = do
     char '}'
     return (Signature r s)
 
+-- | Parses a verify info
 verifyInfo :: Parsec String () VerifyInfo
 verifyInfo = do
     c <- curve
@@ -191,6 +206,8 @@ verifyInfo = do
     spaces
     return (VerifyInfo c sig p h)
 
+-- | Parses a verify info using Parsec given the input string
 parseVerifyInfo :: Monad m => String -> m (Either ParseError VerifyInfo)
 parseVerifyInfo textInput = do 
     return $ parse verifyInfo "" textInput
+    
