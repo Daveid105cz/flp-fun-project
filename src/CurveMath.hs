@@ -37,7 +37,7 @@ eucl r t s oldR oldT oldS
 inverseMod :: Integer -> Integer -> Integer
 inverseMod k p
     | k < 0 = p - inverseMod (-k) p
-    | otherwise = mod x p where (gcd, y, x) = eucl p 1 0 k 0 1 
+    | otherwise = mod x p where (_, _, x) = eucl p 1 0 k 0 1 
 
 -- | Adds two points on a curve given the curve parameters
 -- A helper function for add that checks for special cases
