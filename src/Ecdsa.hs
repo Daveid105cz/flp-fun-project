@@ -10,7 +10,6 @@ import System.Random
 import Types
 import CurveMath
 
-
 generatePrivateKey :: StdGen -> Integer -> PrivateKey
 generatePrivateKey genSeed maxN = let (theVal, _) = randomR (1,maxN-1) genSeed in PrivateKey theVal
 
@@ -40,5 +39,3 @@ verify curve@(Curve p a b g n h) public@(PublicKey px py) signature@(Signature r
         scalar1 = multscalar g u1 a p
         scalar2 = multscalar (Point px py) u2 a p
         point = add scalar1 scalar2 a p
-
-        -- point = add 

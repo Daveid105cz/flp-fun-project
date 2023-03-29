@@ -46,8 +46,6 @@ instance Show Curve where
 
 newtype PrivateKey = PrivateKey Integer
 
--- type PublicKey = Point
-
 data PublicKey = PublicKey{
     px :: Integer,
     py :: Integer
@@ -62,7 +60,7 @@ instance Show PrivateKey where
     show (PrivateKey value) = printf "0x%064X" value
 
 instance Show PublicKey where
-    show (PublicKey x y) = printf "0x04%064X%064X" x y --TODO: remove the strednik
+    show (PublicKey x y) = printf "0x04%064X%064X" x y
 
 instance Show Keys where
   show (Keys private public) = "Key {\nd: "++show private ++ "\nQ: "++ show public ++ "\n}"
