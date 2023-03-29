@@ -6,8 +6,28 @@ module ParseInput
     ) where
 
 import Text.Parsec
+    ( ParseError,
+      char,
+      digit,
+      hexDigit,
+      spaces,
+      string,
+      count,
+      many1,
+      (<|>),
+      parse,
+      try,
+      Parsec )
 import Numeric (readHex, readDec)
 import Types
+    ( Curve(Curve),
+      Keys(Keys),
+      Point(Point),
+      PrivateKey(PrivateKey),
+      PublicKey(PublicKey),
+      Signature(Signature),
+      SigningInfo(SigningInfo),
+      VerifyInfo(VerifyInfo) )
 
 data Switch = Info | KeyGen | Sign | Verify deriving (Enum, Show)
 

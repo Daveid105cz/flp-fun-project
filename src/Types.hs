@@ -13,7 +13,7 @@ module Types
         VerifyInfo(..),
         hexaShow
     ) where
-import Text.Printf
+import Text.Printf ( printf )
 
 data Point = Point { 
     x :: Integer, 

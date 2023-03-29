@@ -4,7 +4,7 @@
 module CurveMath
     ( multscalar, inverseMod, add
     ) where
-import Types
+import Types ( Point(Point) )
 
 inf :: Point
 inf = Point 0 0

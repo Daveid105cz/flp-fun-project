@@ -9,9 +9,15 @@ module Ecdsa
         verify
     )where
 
-import System.Random
+import System.Random ( StdGen, Random(randomR) )
 import Types
-import CurveMath
+    ( Curve(Curve),
+      Keys(Keys),
+      Point(Point, x),
+      PrivateKey(..),
+      PublicKey(PublicKey),
+      Signature(Signature) )
+import CurveMath ( add, inverseMod, multscalar )
 
 generatePrivateKey :: StdGen -> Integer -> PrivateKey
 generatePrivateKey genSeed maxN = let (theVal, _) = randomR (1,maxN-1) genSeed in PrivateKey theVal

@@ -7,9 +7,20 @@ import System.Environment (getArgs)
 import System.Random
 
 import ParseInput
+    ( parseCurve,
+      parseSigningInfo,
+      parseSwitch,
+      parseVerifyInfo,
+      Switch(..) )
 import Ecdsa
+    ( calculatePublicKey, generatePrivateKey, sign, verify )
 import Types
-import Control.Monad.IO.Class
+    ( Curve(n),
+      Keys(Keys),
+      Signature,
+      SigningInfo(SigningInfo),
+      VerifyInfo(vHash, vCurve, vPublicKey, vSignature) )
+import Control.Monad.IO.Class ( MonadIO )
 
 main :: IO ()
 main = do
