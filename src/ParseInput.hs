@@ -1,3 +1,6 @@
+-- Projekt: flp22-fun
+-- Autor: David Podeszwa (xpodes05)
+-- Rok: 2023
 module ParseInput
     ( parseSwitch, parseCurve, parseSigningInfo, parseVerifyInfo,  Switch(..)
     ) where
