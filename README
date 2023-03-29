@@ -1,0 +1,7 @@
+Implementována byla všechna funkčnost. 
+Seznam zdrojových souborů:
+    - Main.hs - Obsahuje main funkci a rozhodování nad tím která akce se má vykonávat
+    - ParseInput.hs - Parsing vstupů a argument flagů
+    - Types.hs - Definice vlastních datových typů
+    - CurveMath.hs - Matematické funkce pracující s body na křivce
+    - Ecdsa.hs - Funkce provádějící ECDSA operace
