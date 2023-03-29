@@ -159,7 +159,9 @@ verifyInfo = do
     spaces
     p <- publicKeyOnly
     spaces
-    return (VerifyInfo c sig p)
+    h <- hash
+    spaces
+    return (VerifyInfo c sig p h)
 
 parseVerifyInfo :: Monad m => String -> m (Either ParseError VerifyInfo)
 parseVerifyInfo textInput = do 

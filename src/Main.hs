@@ -1,16 +1,10 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use print" #-}
+
 module Main where
 
 import System.Environment (getArgs)
-import System.IO (readFile)
-import Data.Maybe (isJust)
-import Text.Parsec
-import Text.Parsec.Error
 import System.Random
 
 import ParseInput
-import CurveMath
 import Ecdsa
 import Types
 
@@ -31,11 +25,10 @@ main = do
         case switch of
             Just a -> do 
                 stdinContent <- getContents
-                -- putStrLn stdinContent
                 makeWork a stdinContent
             Nothing -> error "Invalid switch on input"
-    []   -> do
-        error "Invalid arguments, no switch set"
+    _   -> do
+        error "Invalid arguments"
 
 
 
@@ -44,32 +37,32 @@ getCurve textInput = do
     parsed <- parseCurve textInput
     case parsed of
         Right curve -> return curve
-        Left err -> error "Invalid input"
+        Left _ -> error "Invalid input"
 
 getSigningInfo :: Monad m => String -> m SigningInfo
 getSigningInfo textInput = do
     parsed <- parseSigningInfo textInput
     case parsed of
         Right signInfo -> return signInfo
-        Left err -> error "Invalid input"
+        Left _ -> error "Invalid input"
 
 getVerifyInfo :: Monad m => String -> m VerifyInfo
 getVerifyInfo textInput = do
     parsed <- parseVerifyInfo textInput
     case parsed of
         Right verifyInfo -> return verifyInfo
-        Left err -> error "Invalid input"
+        Left _ -> error "Invalid input"
 
 
 -- generateKeys :: Monad m => String -> m 
 generateNewKeys curve = do
     generator <- newStdGen
-    -- let privateKey = generatePrivateKey generator (n curve)
-    let privateKey = PrivateKey 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
+    let privateKey = generatePrivateKey generator (n curve)
+    -- let privateKey = PrivateKey 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
     let publicKey = calculatePublicKey curve privateKey
     return (Keys privateKey publicKey)
 
-signHash signInfo@(SigningInfo curve keys hash) = do
+signHash (SigningInfo curve keys hash) = do
     generator <- newStdGen
     let signResult = sign generator curve keys hash
     return signResult
@@ -87,10 +80,11 @@ makeWork switch textInput = do
             print keys 
         Sign -> do
             signInfo <- getSigningInfo textInput
-            (s, kk) <- signHash signInfo
+            s <- signHash signInfo
             print s
         Verify -> do
             verifyInfo <- getVerifyInfo textInput
-            let resu = verify (vCurve verifyInfo) (vPublicKey verifyInfo) (vSignature verifyInfo) 0x94996fead5b722c3bd07360c459927976e804f869626f4897def03fa56b009e3
-            print resu
+            -- let resu = verify (vCurve verifyInfo) (vPublicKey verifyInfo) (vSignature verifyInfo) 0x94996fead5b722c3bd07360c459927976e804f869626f4897def03fa56b009e3
+            let result = verify (vCurve verifyInfo) (vPublicKey verifyInfo) (vSignature verifyInfo) (vHash verifyInfo)
+            print result
 

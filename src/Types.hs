@@ -85,5 +85,6 @@ instance Show Signature where
 data VerifyInfo = VerifyInfo{
     vCurve :: Curve,
     vSignature :: Signature,
-    vPublicKey :: PublicKey
+    vPublicKey :: PublicKey,
+    vHash :: Integer
 } deriving Show
