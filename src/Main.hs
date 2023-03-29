@@ -74,6 +74,7 @@ makeWork switch textInput = do
 
         KeyGen -> do
             curve <- getCurve textInput   
+            -- print curve
             keys <- generateNewKeys curve
             print keys 
         Sign -> do
