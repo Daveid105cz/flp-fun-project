@@ -15,6 +15,7 @@ parseSwitch "-s" = Just Sign
 parseSwitch "-v" = Just Verify
 parseSwitch _ = Nothing
 
+preHexa :: Parsec String () Char
 preHexa = do
     char '0'
     char 'x' <|> char 'X'
@@ -34,6 +35,7 @@ integer = do
         [(n, "")] -> return n
         _ -> error "Invalid number"
 
+integerWithName :: String -> Parsec String () Integer
 integerWithName propertyName = do
     string propertyName
     string ":"
@@ -53,7 +55,6 @@ point = do
     char '}'
     return (Point x y)
 
--- Parse a curve
 curve :: Parsec String () Curve
 curve = do
     string "Curve"
@@ -82,6 +83,7 @@ parseCurve :: Monad m => String -> m (Either ParseError Curve)
 parseCurve textInput = do 
     return $ parse curve "" textInput
 
+publicKey :: Parsec String () PublicKey
 publicKey = do
     preHexa
     string "04"
@@ -110,8 +112,10 @@ keys = do
     char '}'
     return (Keys (PrivateKey d) q)
 
+hash :: Parsec String () Integer
 hash = integerWithName "Hash"
 
+signingInfo :: Parsec String () SigningInfo
 signingInfo = do
     c <- curve
     spaces
@@ -152,6 +156,7 @@ msgSignature = do
     char '}'
     return (Signature r s)
 
+verifyInfo :: Parsec String () VerifyInfo
 verifyInfo = do
     c <- curve
     spaces
