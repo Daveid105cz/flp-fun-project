@@ -26,14 +26,14 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [sw,filename] -> do
+    [sw,filename] -> do -- file input
         let switch = parseSwitch sw
         case switch of
             Just a -> do
                 fileContent <- readFile filename
                 makeWork a fileContent
             Nothing -> error "Invalid switch on input"
-    [sw] -> do
+    [sw] -> do  -- stdin input
         let switch = parseSwitch sw
         case switch of
             Just a -> do 
@@ -44,6 +44,8 @@ main = do
         error "Invalid arguments"
 
 
+-- | Get curve from input
+-- If input is invalid, error is thrown
 getCurve :: Monad m => String -> m Curve
 getCurve textInput = do
     parsed <- parseCurve textInput
@@ -51,6 +53,8 @@ getCurve textInput = do
         Right curve -> return curve
         Left _ -> error "Invalid input"
 
+-- | Get signing info from input
+-- If input is invalid, error is thrown
 getSigningInfo :: Monad m => String -> m SigningInfo
 getSigningInfo textInput = do
     parsed <- parseSigningInfo textInput
@@ -58,6 +62,9 @@ getSigningInfo textInput = do
         Right signInfo -> return signInfo
         Left _ -> error "Invalid input"
 
+
+-- | Get verify info from input
+-- If input is invalid, error is thrown
 getVerifyInfo :: Monad m => String -> m VerifyInfo
 getVerifyInfo textInput = do
     parsed <- parseVerifyInfo textInput
@@ -65,7 +72,8 @@ getVerifyInfo textInput = do
         Right verifyInfo -> return verifyInfo
         Left _ -> error "Invalid input"
 
-
+-- | Generate new keys
+-- Takes one argument - curve from which keys are generated
 generateNewKeys :: MonadIO m => Curve -> m Keys
 generateNewKeys curve = do
     generator <- newStdGen
@@ -73,12 +81,16 @@ generateNewKeys curve = do
     let publicKey = calculatePublicKey curve privateKey
     return (Keys privateKey publicKey)
 
+-- | Sign hash
+-- Takes one argument - signing info and generates signature
 signHash :: MonadIO m => SigningInfo -> m Signature
 signHash (SigningInfo curve keys hash) = do
     generator <- newStdGen
     let signResult = sign generator curve keys hash
     return signResult
 
+-- | Make work
+-- Decides which action to take based on switch and then completes that action with given input
 makeWork :: Switch -> String -> IO()
 makeWork switch textInput = do
     case switch of
