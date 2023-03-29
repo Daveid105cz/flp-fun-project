@@ -7,8 +7,7 @@ import System.Random
 import ParseInput
 import Ecdsa
 import Types
-import qualified Control.Monad.IO.Class
-
+import Control.Monad.IO.Class
 
 main :: IO ()
 main = do
@@ -54,14 +53,14 @@ getVerifyInfo textInput = do
         Left _ -> error "Invalid input"
 
 
-generateNewKeys :: Control.Monad.IO.Class.MonadIO m => Curve -> m Keys
+generateNewKeys :: MonadIO m => Curve -> m Keys
 generateNewKeys curve = do
     generator <- newStdGen
     let privateKey = generatePrivateKey generator (n curve)
     let publicKey = calculatePublicKey curve privateKey
     return (Keys privateKey publicKey)
 
-signHash :: Control.Monad.IO.Class.MonadIO m => SigningInfo -> m Signature
+signHash :: MonadIO m => SigningInfo -> m Signature
 signHash (SigningInfo curve keys hash) = do
     generator <- newStdGen
     let signResult = sign generator curve keys hash
