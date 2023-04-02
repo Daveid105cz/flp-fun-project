@@ -20,7 +20,6 @@ import Types
       Signature,
       SigningInfo(SigningInfo),
       VerifyInfo(vHash, vCurve, vPublicKey, vSignature) )
-import Control.Monad.IO.Class ( MonadIO )
 
 main :: IO ()
 main = do
@@ -74,7 +73,7 @@ getVerifyInfo textInput = do
 
 -- | Generate new keys
 -- Takes one argument - curve from which keys are generated
-generateNewKeys :: MonadIO m => Curve -> m Keys
+generateNewKeys :: Curve -> IO Keys
 generateNewKeys curve = do
     generator <- newStdGen
     let privateKey = generatePrivateKey generator (n curve)
@@ -83,7 +82,7 @@ generateNewKeys curve = do
 
 -- | Sign hash
 -- Takes one argument - signing info and generates signature
-signHash :: MonadIO m => SigningInfo -> m Signature
+signHash :: SigningInfo -> IO Signature
 signHash (SigningInfo curve keys hash) = do
     generator <- newStdGen
     let signResult = sign generator curve keys hash
