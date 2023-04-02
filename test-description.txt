@@ -1,0 +1,12 @@
+test01.in
+    spuštění: flp22-fun -i test/test01.in
+    výstup: vypíše stejný obsah jako je vstup
+test03.in
+    spuštění: flp22-fun -s test/test03.in
+    výstup: vypíše validní signaturu
+test04.in
+    spuštění: flp22-fun -v test/test04.in
+    výstup: vypíše True
+test05.in
+    spuštění: flp22-fun -v test/test05.in
+    výstup: vypíše False

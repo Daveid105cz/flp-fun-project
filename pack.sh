@@ -12,11 +12,12 @@
 #create the doc directory if it does not exist
 mkdir -p doc
 cp README ./doc/README
+cp test-description.txt ./doc/test-description.txt
 
 # Remove the zip file if it exists
 rm -f flp-fun-xpodes05.zip
 # Create the zip file
-zip flp-fun-xpodes05.zip Makefile src/* doc/README
+zip flp-fun-xpodes05.zip Makefile src/*.hs doc/README doc/test-description.txt test/*.in
 
 #remove the doc directory
 rm -rf doc

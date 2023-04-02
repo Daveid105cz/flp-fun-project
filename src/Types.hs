@@ -33,7 +33,7 @@ hexaShow :: Integer-> String
 hexaShow = printf "0x%064X"
 
 instance Show Point where
-  show (Point x y) = "Point {\nx: "++hexaShow x ++ "\ny: "++hexaShow y ++ "\n}"
+  show (Point x y) = "Point {\n    x: "++hexaShow x ++ "\n    y: "++hexaShow y ++ "\n}"
 
 instance Show Curve where
   show (Curve p a b g n h) = 
